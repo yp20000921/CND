@@ -1,0 +1,99 @@
+name: sign_experiment
+data:
+    data_path: data/CSL_SMKD1d 
+    version: phoenix_2014_trans
+    sgn: sign
+    txt: text
+    gls: gloss
+    train: csl.smkd1d.train
+    dev: csl.smkd1d.dev
+    test: csl.smkd1d.test
+    feature_size: 1024
+    level: word
+    txt_lowercase: true
+    max_sent_length: 400
+    random_train_subset: -1
+    random_dev_subset: -1
+testing:
+    recognition_beam_sizes:
+    - 1
+    translation_beam_sizes:
+    - 4
+    translation_beam_alphas:
+    - 5
+training:
+    reset_best_ckpt: false
+    reset_scheduler: false
+    reset_optimizer: false
+    random_seed: 42
+    model_dir: "./model-csl"
+    recognition_loss_weight: 0
+    translation_loss_weight: 1.0
+    eval_metric: bleu_nat
+    optimizer: adam
+    learning_rate: 0.0001
+    batch_size: 32
+    num_valid_log: 5
+    epochs: 60
+    early_stopping_metric: eval_metric
+    batch_type: sentence
+    translation_normalization: batch
+    eval_recognition_beam_size: 1
+    eval_translation_beam_size: 1
+    eval_translation_beam_alpha: -1
+    overwrite: false
+    shuffle: true
+    use_cuda: true
+    translation_max_output_length: 30
+    keep_last_ckpts: 2
+    batch_multiplier: 1
+    logging_freq: 100
+    validation_freq: 100
+    betas:
+    - 0.9
+    - 0.998
+    scheduling: warmupexponentialdecay
+    learning_rate_min: 2.0e-05
+    learning_rate_decay: 0.1
+    learning_rate_warmup: 8000
+    learning_rate_peak: 5.0e-4
+    learning_rate_decay_length: 10000
+    weight_decay: 0.001
+    patience: 8
+    decrease_factor: 0.7
+    label_smoothing: 0.1
+model:
+    initializer: xavier
+    bias_initializer: zeros
+    init_gain: 1.0
+    embed_initializer: xavier
+    embed_init_gain: 1.0
+    tied_softmax: false
+    encoder:
+        type: transformer
+        num_layers: 6
+        num_heads: 8
+        embeddings:
+            embedding_dim: 1024
+            scale: false
+            dropout: 0.1
+            norm_type: batch
+            activation_type: softsign
+        hidden_size: 1024
+        ff_size: 2048
+        dropout: 0.1
+    decoder:
+        type: transformer
+        rd: 0
+        curriculum_type: linear
+        num_layers: 6
+        num_heads: 8
+        embeddings:
+            embedding_dim: 1024
+            scale: false
+            dropout: 0.1
+            norm_type: batch
+            activation_type: softsign
+        hidden_size: 1024
+        ff_size: 2048
+        dropout: 0.1
